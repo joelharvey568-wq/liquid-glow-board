@@ -67,7 +67,7 @@ export function KanbanBoard({ events, onToggleComplete, onMoveToColumn, onDelete
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   draggable
-                  onDragStart={e => e.dataTransfer.setData('text/plain', task.id)}
+                  onDragStart={(e: React.DragEvent) => e.dataTransfer.setData('text/plain', task.id)}
                   className={`
                     group p-3 rounded-xl border cursor-grab active:cursor-grabbing transition-all duration-200
                     ${catClass[task.category]}
