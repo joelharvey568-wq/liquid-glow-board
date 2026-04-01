@@ -66,14 +66,21 @@ export function KanbanBoard({ events, onToggleComplete, onMoveToColumn, onDelete
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  draggable
-                  onDragStart={(e: React.DragEvent) => e.dataTransfer.setData('text/plain', task.id)}
                   className={`
                     group p-3 rounded-xl border cursor-grab active:cursor-grabbing transition-all duration-200
                     ${catClass[task.category]}
                     ${task.completed ? 'completed-event' : ''}
                     hover:scale-[1.02]
                   `}
+                  {...{ draggable: true } as any}
+                  onDragStartCapture={undefined}
+                  ref={(node: HTMLDivElement | null) => {
+                    if (node) {
+                      node.ondragstart = (ev) => {
+                        ev.dataTransfer?.setData('text/plain', task.id);
+                      };
+                    }
+                  }}
                 >
                   <div className="flex items-start gap-2">
                     <GripVertical className="w-3.5 h-3.5 text-muted-foreground/50 mt-0.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
