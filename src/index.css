@@ -43,12 +43,14 @@
     --cat-project: 280 80% 65%;
     --cat-health: 340 80% 60%;
 
-    /* Glass effect */
+    /* Liquid glass effect */
     --glass-bg: 240 15% 12%;
     --glass-border: 240 15% 22%;
     --glass-glow: 200 100% 60%;
+    --glass-specular: 0 0% 100%;
+    --glass-refraction: 200 80% 70%;
 
-    --sidebar-background: 240 15% 8%;
+    --sidebar-background: 240 15% 6%;
     --sidebar-foreground: 220 20% 92%;
     --sidebar-primary: 200 100% 60%;
     --sidebar-primary-foreground: 240 20% 4%;
@@ -71,52 +73,124 @@
 }
 
 @layer components {
-  .glass-panel {
-    @apply relative overflow-hidden rounded-2xl border;
+  /* ── Apple Liquid Glass ── */
+  .liquid-glass {
+    @apply relative overflow-hidden rounded-2xl;
     background: linear-gradient(
       135deg,
-      hsl(var(--glass-bg) / 0.7),
-      hsl(var(--glass-bg) / 0.4)
+      hsl(var(--glass-bg) / 0.45),
+      hsl(var(--glass-bg) / 0.2)
     );
-    border-color: hsl(var(--glass-border) / 0.5);
-    backdrop-filter: blur(24px) saturate(1.8);
-    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    border: 1px solid hsl(var(--glass-specular) / 0.12);
+    backdrop-filter: blur(40px) saturate(2) brightness(1.1);
+    -webkit-backdrop-filter: blur(40px) saturate(2) brightness(1.1);
+    box-shadow:
+      inset 0 1px 0 0 hsl(var(--glass-specular) / 0.1),
+      inset 0 -1px 0 0 hsl(var(--glass-specular) / 0.03),
+      0 8px 32px -8px hsl(240 20% 4% / 0.5),
+      0 2px 8px -2px hsl(240 20% 4% / 0.3);
+  }
+
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      165deg,
+      hsl(var(--glass-specular) / 0.08) 0%,
+      transparent 40%,
+      hsl(var(--glass-refraction) / 0.04) 60%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .liquid-glass-hover {
+    @apply liquid-glass transition-all duration-300 ease-out;
+  }
+
+  .liquid-glass-hover:hover {
+    border-color: hsl(var(--glass-specular) / 0.2);
+    box-shadow:
+      inset 0 1px 0 0 hsl(var(--glass-specular) / 0.15),
+      inset 0 -1px 0 0 hsl(var(--glass-specular) / 0.05),
+      0 12px 40px -8px hsl(240 20% 4% / 0.5),
+      0 4px 16px -4px hsl(var(--glass-glow) / 0.15);
+    transform: translateY(-1px);
+  }
+
+  /* Keep old class names working */
+  .glass-panel {
+    @apply liquid-glass;
   }
 
   .glass-panel-hover {
-    @apply glass-panel transition-all duration-300;
-  }
-
-  .glass-panel-hover:hover {
-    border-color: hsl(var(--glass-border) / 0.8);
-    box-shadow: 
-      0 0 20px -5px hsl(var(--glass-glow) / 0.15),
-      inset 0 1px 0 hsl(0 0% 100% / 0.05);
+    @apply liquid-glass-hover;
   }
 
   .glass-button {
     @apply relative overflow-hidden rounded-xl px-4 py-2 font-medium transition-all duration-300;
-    background: hsl(var(--glass-bg) / 0.6);
-    border: 1px solid hsl(var(--glass-border) / 0.5);
-    backdrop-filter: blur(16px);
+    background: hsl(var(--glass-bg) / 0.4);
+    border: 1px solid hsl(var(--glass-specular) / 0.1);
+    backdrop-filter: blur(24px) saturate(1.8);
+    box-shadow: inset 0 1px 0 0 hsl(var(--glass-specular) / 0.06);
   }
 
   .glass-button:hover {
-    background: hsl(var(--glass-bg) / 0.8);
-    border-color: hsl(var(--primary) / 0.5);
-    box-shadow: 0 0 16px -4px hsl(var(--primary) / 0.3);
+    background: hsl(var(--glass-bg) / 0.6);
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow:
+      inset 0 1px 0 0 hsl(var(--glass-specular) / 0.1),
+      0 0 20px -6px hsl(var(--primary) / 0.3);
   }
 
   .glow-primary {
-    box-shadow: 
+    box-shadow:
       0 0 20px -5px hsl(var(--primary) / 0.4),
       0 0 60px -15px hsl(var(--primary) / 0.2);
   }
 
   .glow-accent {
-    box-shadow: 
+    box-shadow:
       0 0 20px -5px hsl(var(--accent) / 0.4),
       0 0 60px -15px hsl(var(--accent) / 0.2);
+  }
+
+  /* Liquid glass sidebar */
+  .liquid-sidebar {
+    background: linear-gradient(
+      180deg,
+      hsl(var(--glass-bg) / 0.5),
+      hsl(var(--glass-bg) / 0.3)
+    );
+    border-right: 1px solid hsl(var(--glass-specular) / 0.08);
+    backdrop-filter: blur(40px) saturate(2);
+    -webkit-backdrop-filter: blur(40px) saturate(2);
+  }
+
+  .liquid-nav-item {
+    @apply relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 cursor-pointer;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .liquid-nav-item:hover {
+    background: hsl(var(--glass-specular) / 0.05);
+    color: hsl(var(--foreground));
+  }
+
+  .liquid-nav-item.active {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.15),
+      hsl(var(--primary) / 0.05)
+    );
+    border: 1px solid hsl(var(--primary) / 0.2);
+    color: hsl(var(--primary));
+    box-shadow:
+      0 0 20px -6px hsl(var(--primary) / 0.3),
+      inset 0 1px 0 0 hsl(var(--glass-specular) / 0.08);
   }
 
   .aurora-bg {
@@ -124,10 +198,11 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background: 
-      radial-gradient(ellipse 80% 50% at 20% 20%, hsl(var(--primary) / 0.08), transparent),
-      radial-gradient(ellipse 60% 40% at 80% 80%, hsl(var(--accent) / 0.06), transparent),
-      radial-gradient(ellipse 50% 60% at 50% 50%, hsl(var(--secondary) / 0.05), transparent);
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 20%, hsl(var(--primary) / 0.1), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 80%, hsl(var(--accent) / 0.08), transparent),
+      radial-gradient(ellipse 50% 60% at 50% 50%, hsl(var(--secondary) / 0.06), transparent),
+      radial-gradient(ellipse 40% 30% at 10% 90%, hsl(var(--cat-personal) / 0.05), transparent);
   }
 
   .category-work { color: hsl(var(--cat-work)); }
